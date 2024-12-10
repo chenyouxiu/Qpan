@@ -1,0 +1,1113 @@
+{
+  "apifoxProject": "1.0.0",
+  "$schema": {
+    "app": "apifox",
+    "type": "project",
+    "version": "1.2.0"
+  },
+  "info": {
+    "name": "QPan网盘系统",
+    "description": "QPan网盘系统的 RESTful API 接口文档",
+    "mockRule": {
+      "rules": [],
+      "enableSystemRule": true
+    }
+  },
+  "apiCollection": [
+    {
+      "name": "用户管理",
+      "id": 1,
+      "items": [
+        {
+          "name": "用户注册",
+          "api": {
+            "id": "1-1",
+            "method": "POST",
+            "path": "/api/v1/public/register",
+            "description": "新用户注册",
+            "requestBody": {
+              "type": "application/json",
+              "jsonSchema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "用户邮箱",
+                    "example": "user@example.com"
+                  },
+                  "username": {
+                    "type": "string",
+                    "description": "用户名"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "密码，最少6位"
+                  }
+                },
+                "required": ["email", "username", "password"]
+              }
+            },
+            "responses": [
+              {
+                "code": 200,
+                "contentType": "application/json",
+                "jsonSchema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "操作成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "用户UUID",
+                          "example": "550e8400-e29b-41d4-a716-446655440000"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "user@example.com"
+                        },
+                        "username": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "注册成功"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "用户登录",
+          "api": {
+            "id": "1-2",
+            "method": "POST",
+            "path": "/api/v1/public/login",
+            "description": "用户登录获取 JWT token",
+            "requestBody": {
+              "type": "application/json",
+              "jsonSchema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "用户邮箱",
+                    "example": "user@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "密码"
+                  }
+                },
+                "required": ["email", "password"]
+              }
+            },
+            "responses": [
+              {
+                "code": 200,
+                "contentType": "application/json",
+                "jsonSchema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "操作成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "token": {
+                          "type": "string",
+                          "description": "JWT token"
+                        },
+                        "user": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "用户UUID"
+                            },
+                            "email": {
+                              "type": "string"
+                            },
+                            "username": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "登录成功"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "文件系统",
+      "id": 2,
+      "items": [
+        {
+          "name": "上传文件",
+          "api": {
+            "id": "2-1",
+            "method": "POST",
+            "path": "/api/v1/fs/upload",
+            "description": "上传文件到指定文件夹，支持文件去重",
+            "requestBody": {
+              "type": "multipart/form-data",
+              "parameters": [
+                {
+                  "name": "file",
+                  "type": "file",
+                  "required": true,
+                  "description": "要上传的文件"
+                },
+                {
+                  "name": "folder_id",
+                  "type": "string",
+                  "format": "uuid",
+                  "required": false,
+                  "description": "目标文件夹ID，不传则上传到根目录"
+                }
+              ]
+            },
+            "responses": [
+              {
+                "code": 200,
+                "contentType": "application/json",
+                "jsonSchema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "操作成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "file_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "file_name": {
+                          "type": "string"
+                        },
+                        "size": {
+                          "type": "integer"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "文件上传成功"
+                        },
+                        "reused": {
+                          "type": "boolean",
+                          "description": "是否是重用的文件"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "获取文件夹内容",
+          "api": {
+            "id": "2-2",
+            "method": "GET",
+            "path": "/api/v1/fs/folder/{id}",
+            "description": "获取指定文件夹的内容，包括子文件夹和文件",
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "description": "文件夹ID",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            ],
+            "responses": [
+              {
+                "code": 200,
+                "contentType": "application/json",
+                "jsonSchema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "操作成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "current_folder": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "breadcrumbs": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "name": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "folders": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "file_count": {
+                                "type": "integer"
+                              },
+                              "sub_folder_count": {
+                                "type": "integer"
+                              },
+                              "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                              }
+                            }
+                          }
+                        },
+                        "files": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "file_name": {
+                                "type": "string"
+                              },
+                              "size": {
+                                "type": "integer"
+                              },
+                              "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                              }
+                            }
+                          }
+                        },
+                        "total": {
+                          "type": "object",
+                          "properties": {
+                            "folders": {
+                              "type": "integer"
+                            },
+                            "files": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "文件夹管理",
+      "id": 3,
+      "items": [
+        {
+          "name": "创建文件夹",
+          "api": {
+            "id": "3-1",
+            "method": "POST",
+            "path": "/api/v1/fs/folder",
+            "description": "创建新文件夹",
+            "requestBody": {
+              "type": "application/json",
+              "jsonSchema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "文件夹名称"
+                  },
+                  "parent_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "父文件夹ID，不传则创建在根目录"
+                  }
+                },
+                "required": ["name"]
+              }
+            },
+            "responses": [
+              {
+                "code": 200,
+                "contentType": "application/json",
+                "jsonSchema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "操作成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "folder_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "文件夹创建成功"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "文件分享",
+      "id": 4,
+      "items": [
+        {
+          "name": "创建分享",
+          "api": {
+            "id": "4-1",
+            "method": "POST",
+            "path": "/api/v1/share/create",
+            "description": "创建文件分享链接",
+            "requestBody": {
+              "type": "application/json",
+              "jsonSchema": {
+                "type": "object",
+                "properties": {
+                  "file_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "要分享的文件ID"
+                  },
+                  "expire_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "分享过期时间"
+                  },
+                  "max_download": {
+                    "type": "integer",
+                    "description": "最大下载次数，0表示无限制"
+                  }
+                },
+                "required": ["file_id"]
+              }
+            },
+            "responses": [
+              {
+                "code": 200,
+                "contentType": "application/json",
+                "jsonSchema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "操作成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "share_code": {
+                          "type": "string",
+                          "description": "分享码"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "创建分享成功"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "获取分享信息",
+          "api": {
+            "id": "4-2",
+            "method": "GET",
+            "path": "/api/v1/public/share/{code}",
+            "description": "获取分享的文件信息",
+            "parameters": [
+              {
+                "name": "code",
+                "in": "path",
+                "required": true,
+                "description": "分享码",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            ],
+            "responses": [
+              {
+                "code": 200,
+                "contentType": "application/json",
+                "jsonSchema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "操作成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "share": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string"
+                            },
+                            "file": {
+                              "type": "object",
+                              "properties": {
+                                "file_name": {
+                                  "type": "string"
+                                },
+                                "size": {
+                                  "type": "integer"
+                                }
+                              }
+                            },
+                            "expire_time": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "download_num": {
+                              "type": "integer"
+                            },
+                            "max_download": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "下载分享文件",
+          "api": {
+            "id": "4-3",
+            "method": "GET",
+            "path": "/api/v1/public/share/{code}/download",
+            "description": "下载分享的文件",
+            "parameters": [
+              {
+                "name": "code",
+                "in": "path",
+                "required": true,
+                "description": "分享码",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            ],
+            "responses": [
+              {
+                "code": 200,
+                "contentType": "application/octet-stream",
+                "description": "文件内容"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "文件搜索和统计",
+      "id": 5,
+      "items": [
+        {
+          "name": "搜索文件",
+          "api": {
+            "id": "5-1",
+            "method": "GET",
+            "path": "/api/v1/fs/search",
+            "description": "搜索文件",
+            "parameters": [
+              {
+                "name": "keyword",
+                "in": "query",
+                "required": true,
+                "description": "搜索关键词",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "type",
+                "in": "query",
+                "required": false,
+                "description": "文件类型筛选",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            ],
+            "responses": [
+              {
+                "code": 200,
+                "contentType": "application/json",
+                "jsonSchema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "操作成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "files": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "file_name": {
+                                "type": "string"
+                              },
+                              "size": {
+                                "type": "integer"
+                              },
+                              "folder_name": {
+                                "type": "string"
+                              },
+                              "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                              }
+                            }
+                          }
+                        },
+                        "total": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "获取文件类型列表",
+          "api": {
+            "id": "5-2",
+            "method": "GET",
+            "path": "/api/v1/fs/types",
+            "description": "获取用户所有文件的类型列表",
+            "responses": [
+              {
+                "code": 200,
+                "contentType": "application/json",
+                "jsonSchema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "操作成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "types": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "获取文件统计信息",
+          "api": {
+            "id": "5-3",
+            "method": "GET",
+            "path": "/api/v1/fs/stats",
+            "description": "获取用户文件统计信息",
+            "responses": [
+              {
+                "code": 200,
+                "contentType": "application/json",
+                "jsonSchema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "操作成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "total_files": {
+                          "type": "integer",
+                          "description": "总文件数"
+                        },
+                        "total_size": {
+                          "type": "integer",
+                          "description": "总存储大小（字节）"
+                        },
+                        "type_stats": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "description": "文件类型"
+                              },
+                              "count": {
+                                "type": "integer",
+                                "description": "该类型文件数量"
+                              },
+                              "size": {
+                                "type": "integer",
+                                "description": "该类型文件总大小"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "文件操作",
+      "id": 6,
+      "items": [
+        {
+          "name": "移动文件",
+          "api": {
+            "id": "6-1",
+            "method": "POST",
+            "path": "/api/v1/fs/file/move",
+            "description": "移动文件到指定文件夹",
+            "requestBody": {
+              "type": "application/json",
+              "jsonSchema": {
+                "type": "object",
+                "properties": {
+                  "file_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "要移动的文件ID"
+                  },
+                  "folder_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "目标文件夹ID，null表示移动到根目录"
+                  }
+                },
+                "required": ["file_id"]
+              }
+            },
+            "responses": [
+              {
+                "code": 200,
+                "contentType": "application/json",
+                "jsonSchema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "操作成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "文件移动成功"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "重命名文件",
+          "api": {
+            "id": "6-2",
+            "method": "POST",
+            "path": "/api/v1/fs/file/rename",
+            "description": "重命名单个文件",
+            "requestBody": {
+              "type": "application/json",
+              "jsonSchema": {
+                "type": "object",
+                "properties": {
+                  "file_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "要重命名的文件ID"
+                  },
+                  "new_file_name": {
+                    "type": "string",
+                    "description": "新文件名，可以包含扩展名，如果不包含则保持原扩展名"
+                  }
+                },
+                "required": ["file_id", "new_file_name"]
+              }
+            },
+            "responses": [
+              {
+                "code": 200,
+                "contentType": "application/json",
+                "jsonSchema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "操作成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "file_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "new_file_name": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "文件重命名成功"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "批量重命名文件",
+          "api": {
+            "id": "6-3",
+            "method": "POST",
+            "path": "/api/v1/fs/file/batch-rename",
+            "description": "批量重命名文件",
+            "requestBody": {
+              "type": "application/json",
+              "jsonSchema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "file_id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "要重命名的文件ID"
+                        },
+                        "new_file_name": {
+                          "type": "string",
+                          "description": "新文件名"
+                        }
+                      },
+                      "required": ["file_id", "new_file_name"]
+                    }
+                  }
+                },
+                "required": ["files"]
+              }
+            },
+            "responses": [
+              {
+                "code": 200,
+                "contentType": "application/json",
+                "jsonSchema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "操作成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "文件批量重命名成功"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "批量移动文件",
+          "api": {
+            "id": "6-4",
+            "method": "POST",
+            "path": "/api/v1/fs/file/batch-move",
+            "description": "批量移动文件到指定文件夹",
+            "requestBody": {
+              "type": "application/json",
+              "jsonSchema": {
+                "type": "object",
+                "properties": {
+                  "file_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "description": "要移动的文件ID列表"
+                  },
+                  "folder_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "目标文件夹ID，null表示移动到根目录"
+                  }
+                },
+                "required": ["file_ids"]
+              }
+            },
+            "responses": [
+              {
+                "code": 200,
+                "contentType": "application/json",
+                "jsonSchema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "操作成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "文件批量移动成功"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "删除文件",
+          "api": {
+            "id": "6-5",
+            "method": "DELETE",
+            "path": "/api/v1/fs/file/{id}",
+            "description": "删除指定文件",
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "description": "要删除的文件ID",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            ],
+            "responses": [
+              {
+                "code": 200,
+                "contentType": "application/json",
+                "jsonSchema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "操作成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "文件删除成功"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "environments": [
+    {
+      "name": "开发环境",
+      "baseUrl": "https://ouvudspruesl.sealoshzh.site",
+      "variables": []
+    }
+  ],
+  "commonParameters": {
+    "headers": [
+      {
+        "name": "Authorization",
+        "value": "Bearer {{token}}",
+        "description": "JWT 认证令牌",
+        "required": true,
+        "example": "Bearer eyJhbGciOiJIUzI1NiIs..."
+      }
+    ]
+  }
+} 
